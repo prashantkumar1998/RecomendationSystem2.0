@@ -56,9 +56,12 @@ def deleteuser(request):
     #import pdb; pdb.set_trace()
     user1 = User.objects.get(username=user)
     #return HttpResponse(str(user1))
-    s=user1.delete()
-    return HttpResponse(str(s))
-    return Response(status=status.HTTP_204_NO_CONTENT)
+    if request.user.groups.filter(name="adminuser").exists():
+      s=user1.delete()
+      return HttpResponse(str(s))
+    else:
+      return HttpResponse("you are not authorized for this action")
+    #return Response(status=status.HTTP_204_NO_CONTENT)
   except ObjectDoesNotExist as e:
     return JsonResponse({'error': str(e)}, safe=False, status=status.HTTP_404_NOT_FOUND)
   except Exception as e:
